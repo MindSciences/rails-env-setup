@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'mind_sciences/env_setup/generator'
+require 'json'
+
+inputs = Hash[ARGV.flat_map { |s| s.scan(/--?([^=\s]+)(?:=(\S+))?/) }]
+template_file = inputs.delete('template')
+template = JSON.parse(File.read(template_file))
+env_file = inputs.delete('env-file') || '.env'
+generate_env_file = inputs.key?('generate-env-file')
+generator = MindSciences::EnvSetup::Generator.new(inputs['env-name'], template, inputs)
+json = generator.generate_json
+if generate_env_file
+  File.open(env_file, 'w') do |f|
+    json.each do |key, value|
+      f.puts("#{key}=#{value}")
+    end
+  end
+end
+puts json
