@@ -1,15 +1,30 @@
 #!/usr/bin/env ruby
 
-require 'mind_sciences/env_setup/generator'
+require 'env_setup/env_builder'
 require 'json'
 
 inputs = Hash[ARGV.flat_map { |s| s.scan(/--?([^=\s]+)(?:=(\S+))?/) }]
-template_file = inputs.delete('template')
+template_file = inputs.delete('TEMPLATE')
 template = JSON.parse(File.read(template_file))
-env_file = inputs.delete('env-file') || '.env'
-generate_env_file = inputs.key?('generate-env-file')
-generator = MindSciences::EnvSetup::Generator.new(inputs['env-name'], template, inputs)
-json = generator.generate_json
+env_file = inputs.delete('ENV_FILE') || '.env'
+aws_access_key = inputs.delete('AWS_ACCESS_KEY')
+aws_secret_access_key = inputs.delete('AWS_SECRET_ACCESS_KEY')
+aws_region = inputs.delete('AWS_REGION')
+aws_secret_name = inputs.delete('AWS_SECRET_NAME')
+generate_env_file = inputs.key?('GENERATE_ENV_FILE')
+env_name = inputs.delete('ENV_NAME')
+
+EnvSetup.configure do |config|
+  config.template = template
+  config.env_name = env_name
+  config.aws_access_key = aws_access_key
+  config.aws_secret_access_key = aws_secret_access_key
+  config.aws_region = aws_region
+  config.aws_secret_name = aws_secret_name
+end
+
+generator = EnvSetup::EnvBuilder.new(inputs)
+json = generator.build_json
 if generate_env_file
   File.open(env_file, 'w') do |f|
     json.each do |key, value|

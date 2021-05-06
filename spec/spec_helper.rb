@@ -1,5 +1,5 @@
 require 'bundler/setup'
-require 'mind_sciences/env_setup'
+require 'env_setup'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
