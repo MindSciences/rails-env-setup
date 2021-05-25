@@ -5,6 +5,7 @@ require 'env_setup/builder/pattern'
 require 'env_setup/builder/input'
 require 'env_setup/builder/generator'
 require 'env_setup/builder/nested_value'
+require 'env_setup/builder/json'
 require 'aws-sdk-secretsmanager'
 
 module EnvSetup
@@ -37,7 +38,8 @@ module EnvSetup
         { builder: EnvSetup::Builder::Pattern, if: -> { var_template['pattern'] } },
         { builder: EnvSetup::Builder::NestedValue, if: -> { var_template['value'] } },
         { builder: EnvSetup::Builder::Input, if: -> { var_template['input'] } },
-        { builder: EnvSetup::Builder::Generator, if: -> { var_template['generator'] } }
+        { builder: EnvSetup::Builder::Generator, if: -> { var_template['generator'] } },
+        { builder: EnvSetup::Builder::Json, if: -> { var_template.is_a?(Hash) } }
       ].find { |option| option[:if].call }
 
       raise "Invalid var builder: #{var_template.inspect}" unless builder
