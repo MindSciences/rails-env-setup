@@ -27,7 +27,7 @@ module EnvSetup
     def build_var(var_template)
       return var_template unless var_template.is_a?(Hash)
 
-      var_builder(var_template).call
+      var_builder(var_template.transform_keys!(&:to_s)).call
     end
 
     private
@@ -39,6 +39,8 @@ module EnvSetup
         { builder: EnvSetup::Builder::Input, if: -> { var_template['input'] } },
         { builder: EnvSetup::Builder::Generator, if: -> { var_template['generator'] } }
       ].find { |option| option[:if].call }
+
+      raise "Invalid var builder: #{var_template.inspect}" unless builder
 
       builder[:builder].new(var_template, vars.merge(inputs))
     end
