@@ -4,7 +4,6 @@ require 'env_setup/env_builder'
 
 RSpec.describe EnvSetup::EnvBuilder do
   describe '.build_json' do
-    let(:env_name) { 'PR-12345' }
     let(:secret) { SecureRandom.hex }
     let(:salt) { SecureRandom.hex(2) }
     let(:template) do
@@ -37,7 +36,7 @@ RSpec.describe EnvSetup::EnvBuilder do
 
     context 'with aws secrets manager' do
       let(:inputs) do
-        { 'INTEGRATION_APP_HOST' => 'https://integrate.foobar2.com' }
+        { 'INTEGRATION_APP_HOST' => 'https://integrate.foobar2.com', 'ENV_NAME' => 'PR-12345' }
       end
       let(:expected_json) do
         {
@@ -60,7 +59,6 @@ RSpec.describe EnvSetup::EnvBuilder do
 
         allow(EnvSetup).to receive(:configuration).and_return(
           EnvSetup::Configuration.new.tap do |config|
-            config.env_name = env_name
             config.template = template
             config.aws_access_key = 'aws_access_key'
             config.aws_secret_access_key = 'aws_secret_access_key'
@@ -104,7 +102,6 @@ RSpec.describe EnvSetup::EnvBuilder do
 
         allow(EnvSetup).to receive(:configuration).and_return(
           EnvSetup::Configuration.new.tap do |config|
-            config.env_name = env_name
             config.template = template
           end
         )
@@ -117,15 +114,13 @@ RSpec.describe EnvSetup::EnvBuilder do
   end
 
   describe '.build_var' do
-    let(:inputs) { { 'MY_VAR' => 'Hey!', 'FOO' => 'bar' } }
-    let(:env_name) { 'env-test' }
+    let(:inputs) { { 'MY_VAR' => 'Hey!', 'FOO' => 'bar', 'ENV_NAME' => 'env-test' } }
     let(:template) { {} }
     let(:builder) { described_class.new(inputs) }
 
     before do
       EnvSetup.configure do |config|
         config.template = template
-        config.env_name = env_name
       end
     end
 
