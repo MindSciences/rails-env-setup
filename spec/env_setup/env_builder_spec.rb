@@ -27,6 +27,10 @@ RSpec.describe EnvSetup::EnvBuilder do
         },
         'INTEGRATION_APP_URL' => {
           'pattern' => '{{INTEGRATION_APP_HOST}}/api/integrate'
+        },
+        'DOMAINS' => {
+          'APP' => ['abc.com', 'def.com'],
+          'ADMIN' => ['abc-admin.com', 'def-admin.com']
         }
       }
     end
@@ -45,7 +49,8 @@ RSpec.describe EnvSetup::EnvBuilder do
           'APP_SECRET' => secret,
           'APP_PASSWORD' => salt,
           'INTEGRATION_APP_HOST' => inputs['INTEGRATION_APP_HOST'],
-          'INTEGRATION_APP_URL' => "#{inputs['INTEGRATION_APP_HOST']}/api/integrate"
+          'INTEGRATION_APP_URL' => "#{inputs['INTEGRATION_APP_HOST']}/api/integrate",
+          'DOMAINS' => '{"APP"=>["abc.com", "def.com"], "ADMIN"=>["abc-admin.com", "def-admin.com"]}'
         }
       end
 
@@ -88,7 +93,8 @@ RSpec.describe EnvSetup::EnvBuilder do
           'APP_SECRET' => secret,
           'APP_PASSWORD' => salt,
           'INTEGRATION_APP_HOST' => inputs['INTEGRATION_APP_HOST'],
-          'INTEGRATION_APP_URL' => "#{inputs['INTEGRATION_APP_HOST']}/api/integrate"
+          'INTEGRATION_APP_URL' => "#{inputs['INTEGRATION_APP_HOST']}/api/integrate",
+          'DOMAINS' => '{"APP"=>["abc.com", "def.com"], "ADMIN"=>["abc-admin.com", "def-admin.com"]}'
         }
       end
 
