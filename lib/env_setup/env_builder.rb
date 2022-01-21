@@ -19,7 +19,7 @@ module EnvSetup
 
     def build_json
       secrets = aws_secrets
-      configuration.template.merge(secrets).each do |key, var_template|
+      secrets.merge(configuration.template).each do |key, var_template|
         vars[key.to_s] = build_var(var_template)
       end
       vars
@@ -34,17 +34,21 @@ module EnvSetup
     private
 
     def var_builder(var_template)
-      builder = [
+      builder = var_builder_class(var_template)
+
+      raise "Invalid var builder: #{var_template.inspect}" unless builder
+
+      builder[:builder].new(var_template, vars.merge(inputs))
+    end
+
+    def var_builder_class(var_template)
+      [
         { builder: EnvSetup::Builder::Pattern, if: -> { var_template['pattern'] } },
         { builder: EnvSetup::Builder::NestedValue, if: -> { var_template['value'] } },
         { builder: EnvSetup::Builder::Input, if: -> { var_template['input'] } },
         { builder: EnvSetup::Builder::Generator, if: -> { var_template['generator'] } },
         { builder: EnvSetup::Builder::Json, if: -> { var_template.is_a?(Hash) } }
       ].find { |option| option[:if].call }
-
-      raise "Invalid var builder: #{var_template.inspect}" unless builder
-
-      builder[:builder].new(var_template, vars.merge(inputs))
     end
 
     def configuration

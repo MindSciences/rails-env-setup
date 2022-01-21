@@ -12,11 +12,9 @@ aws_secret_access_key = inputs.delete('AWS_SECRET_ACCESS_KEY')
 aws_region = inputs.delete('AWS_REGION')
 aws_secret_name = inputs.delete('AWS_SECRET_NAME')
 generate_env_file = inputs.key?('GENERATE_ENV_FILE')
-env_name = inputs.delete('ENV_NAME')
 
 EnvSetup.configure do |config|
   config.template = template
-  config.env_name = env_name
   config.aws_access_key = aws_access_key
   config.aws_secret_access_key = aws_secret_access_key
   config.aws_region = aws_region
